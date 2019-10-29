@@ -15,7 +15,9 @@ Analyzing atomic force microscopy (Multimode NanoScrope IIId AFM Bruker) force-d
 The algorithms were written in Python 2.7. Several packages might be required. Install the packages by running:
 
 pip install matplotlib
+
 pip install pandas
+
 pip install numpy
 pip install scipy
 pip install sys
