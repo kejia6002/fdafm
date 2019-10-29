@@ -3,11 +3,11 @@
 Analyzing atomic force microscopy (Multimode NanoScrope IIId AFM Bruker) force-distance curve raw data to extrapolate adhesive force, adhesive energy, rupture length, repulsive energy, repulsive distance and sample indentation length.
 
 # Inventory
-1. library
+1. library:
 	all of the python scripts related are included in library
-2. test_data
+2. test_data:
 	some examplary standard input files that one can learn: 1. what a standard input file looks like; 2. run it through the pipeline and compare it to the test_run_result_example
-3. test_run_result_example
+3. test_run_result_example:
 	the examplary output of fdafm 
 	
 # Installation
