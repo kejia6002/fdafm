@@ -92,7 +92,7 @@ for in_file in input_paths:
     ex_sens_list.append(ex_sensitivity_results[2])
     rt_sens_list.append(rt_sensitivity_results[2])
             
-with open(sample_summary, "write") as summary:
+with open(sample_summary, "w") as summary:
     header = 'Sample_Name' + '\t' + 'Extending_Sensitivity_V/nm' + '\t' + 'Retracting_Sensitivity_V/nm'
     summary.write(header)
     summary.write('\n')

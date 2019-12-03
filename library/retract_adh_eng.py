@@ -96,7 +96,7 @@ for in_file, out_file in zip(input_paths, output_paths):
             plt.close()
 
     
-with open(sample_summary, "write") as summary:
+with open(sample_summary, "w") as summary:
     header = 'Sample_Name' + '\t' + 'Adhesive_Energy_aJ'
     summary.write(header)
     summary.write('\n')

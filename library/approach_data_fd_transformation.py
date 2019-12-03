@@ -5,8 +5,8 @@ Created on Fri Dec  1 18:43:13 2017
 
 @author: ZhangYue
 """
-import matplotlib
 matplotlib.use('Agg') #to let it work under windows environment. if its running under linux (mac or linux), no need to include this line
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np

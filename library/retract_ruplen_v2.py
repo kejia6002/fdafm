@@ -110,7 +110,7 @@ for in_file, out_file in zip(input_paths, output_paths):
             plt.close()
         rupture_len_x, rupture_len_y = False, False
 
-with open(sample_summary, "write") as summary:
+with open(sample_summary, "w") as summary:
     header = 'Sample_Name' + '\t' + 'Rupture_Length_nm' + '\t' + 'Baseline_y_std_nN'
     summary.write(header)
     summary.write('\n')

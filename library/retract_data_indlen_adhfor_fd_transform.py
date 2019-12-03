@@ -213,7 +213,7 @@ for in_file, out_file, corrected_data_file in zip(input_paths, output_paths, cor
 
                     #export a summary file which records the indentation length and attractive force. note that 
                     #if the attractive force is not detected, then zero is recorded  
-                    with open(sample_summary, "write") as summary:
+                    with open(sample_summary, "w") as summary:
                         header = 'Sample_Name' + '\t' + 'Indentation_Length_nm' + '\t' + 'Attractive_Force_nN'
                         summary.write(header)
                         summary.write('\n')
