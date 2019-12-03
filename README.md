@@ -4,13 +4,13 @@ Analyzing atomic force microscopy (Multimode NanoScrope IIId AFM Bruker) force-d
 
 # Contact
 
-If you have any question, please reach out to Yue Zhang (yuezhang@jhu.edu)
+If you have any questions, please feel free to reach out to Yue Zhang (yuezhang@jhu.edu)
 
 # Implementation
 
 All the scripts were implemented in python 2.7.16. 
 
-If you are using windows system to run the scripts, please make sure you have this line in the front for all the scripts using matplotlib:
+If you are using windows system to run the scripts, please make sure that you have this line in the front for all the scripts using matplotlib:
 matplotlib.use('Agg')
 
 # Inventory
