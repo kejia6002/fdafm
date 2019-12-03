@@ -2,6 +2,10 @@
 
 Analyzing atomic force microscopy (Multimode NanoScrope IIId AFM Bruker) force-distance curve raw data to extrapolate adhesive force, adhesive energy, rupture length, repulsive energy, repulsive distance and sample indentation length.
 
+# Contact
+
+If you have any question, please reach out to Yue Zhang (yuezhang@jhu.edu)
+
 # Implementation
 
 All the scripts were implemented in python 2.7.16. 
