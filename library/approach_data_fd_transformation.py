@@ -5,8 +5,8 @@ Created on Fri Dec  1 18:43:13 2017
 
 @author: ZhangYue
 """
-matplotlib.use('Agg') #to let it work under windows environment. if its running under linux (mac or linux), no need to include this line
 import matplotlib
+#matplotlib.use('Agg') #to let it work under windows environment. if its running under linux (mac or linux), no need to include this line
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -46,7 +46,7 @@ def calc_sensitivity(end,intv,x,y):
     sens_x, sens_y = [], []
     for i in range(0,end,intv):
         r = lr(sens_x + x[i:i+intv],sens_y + y[i:i+intv]).rvalue
-        if r > 0.99:
+        if r*r > 0.999:#updated
             sens_x = sens_x + x[i:i+intv]
             sens_y =sens_y + y[i:i+intv]        
         else:#take out the outlier
@@ -54,7 +54,7 @@ def calc_sensitivity(end,intv,x,y):
                 tem_x, tem_y = x[i:i+intv], y[i:i+intv]
                 del tem_x[j], tem_y[j]
                 r = lr(sens_x+tem_x, sens_y+tem_y).rvalue
-                if abs(r) > 0.99:
+                if r*r > 0.999:#updated
                     sens_x = sens_x + tem_x
                     sens_y = sens_y + tem_y
                     break
@@ -158,7 +158,7 @@ for in_file, out_file, corrected_data_file in zip(input_paths, output_paths, cor
                 plt.savefig(out_file)
                 plt.close()
 
-print 'Finished' + data_directory
+print 'Finished ' + data_directory
     
     
     

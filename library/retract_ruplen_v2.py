@@ -18,6 +18,9 @@ import sys, os, math
 # provide directory as argument on command line 
 data_directory = sys.argv[1]
 output_dir = sys.argv[2]
+
+#provide the region of baseline (e.g., if the last 150 points of a force distance curve is the baseline region, then input 150)
+bsl = int(sys.argv[3])
 #create a .txt file to store the summary
 sample_summary = output_dir + data_directory + '_ruplen_version1.txt'
 #make directories for plot and corrected data output
@@ -45,10 +48,10 @@ output_paths = [os.path.join(output_directory, i) for i in output_file_list]
 sample_name_list, rupture_len_list = [],[]
 baseline_std_list = []
 
-def rupturelen(x,y): #this algorithm automatically find the position where the first
-    #dot has y value higher than mean(y[-150:]) - 3*std(y[-150:])
-    baseline_y = np.mean(y[-150:])
-    baseline_y_std = np.std(y[-150:])
+def rupturelen(x,y,bsl): #this algorithm automatically find the position where the first
+    #dot has y value higher than mean(y[-bsl:]) - 3*std(y[-bsl:])
+    baseline_y = np.mean(y[-bsl:])
+    baseline_y_std = np.std(y[-bsl:])
     adfor_idx = y.idxmin()
     adfor_y = y[adfor_idx]
     counter = 0
@@ -81,7 +84,7 @@ for in_file, out_file in zip(input_paths, output_paths):
     distance = df[df.columns[0]]
     force = df[df.columns[1]]
 
-    rupture_len_x, rupture_len_y, baseline_y_std = rupturelen(distance,force)
+    rupture_len_x, rupture_len_y, baseline_y_std = rupturelen(distance,force,bsl)
     
     
     if rupture_len_x == False:

@@ -38,7 +38,7 @@ def calc_sensitivity(end,intv,x,y):
     sens_x, sens_y = [], []
     for i in range(0,end,intv):
         r = lr(sens_x + x[i:i+intv],sens_y + y[i:i+intv]).rvalue
-        if r > 0.99:
+        if r*r > 0.999:#updated
             sens_x = sens_x + x[i:i+intv]
             sens_y =sens_y + y[i:i+intv]        
         else:#take out the outlier
@@ -46,7 +46,7 @@ def calc_sensitivity(end,intv,x,y):
                 tem_x, tem_y = x[i:i+intv], y[i:i+intv]
                 del tem_x[j], tem_y[j]
                 r = lr(sens_x+tem_x, sens_y+tem_y).rvalue
-                if abs(r) > 0.99:
+                if r*r > 0.999:#updated
                     sens_x = sens_x + tem_x
                     sens_y = sens_y + tem_y
                     break
@@ -92,7 +92,7 @@ for in_file in input_paths:
     ex_sens_list.append(ex_sensitivity_results[2])
     rt_sens_list.append(rt_sensitivity_results[2])
             
-with open(sample_summary, "w") as summary:
+with open(sample_summary, "write") as summary:
     header = 'Sample_Name' + '\t' + 'Extending_Sensitivity_V/nm' + '\t' + 'Retracting_Sensitivity_V/nm'
     summary.write(header)
     summary.write('\n')
@@ -101,7 +101,7 @@ with open(sample_summary, "w") as summary:
         content = sample_name[i] + '\t' + str(ex_sens_list[i]) + '\t' + str(rt_sens_list[i])
         summary.write(content)
         summary.write('\n')
-print 'Finished' + data_directory
+print 'Finished ' + data_directory
         
         
         
