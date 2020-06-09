@@ -1,7 +1,0 @@
-Sample_Name	Indentation_Length_nm	Attractive_Force_nN
-180424_fv_paeru_loc1-9-0.spm.out	101.019725	0.181718026
-180424_fv_paeru_loc1-9-3.spm.out	83.760175	0.231100034
-180424_fv_pmon2_loc1-18-22.spm.out	81.40505	11.635720329
-190315_fv_sc_loc1.000-512-0.spm.out	5.174465	0.201870216
-190315_fv_sc_loc1.000-512-1.spm.out	8.622965	0.268231251
-190315_fv_sc_loc1.000-512-2.spm.out	9.38589	0.188465244

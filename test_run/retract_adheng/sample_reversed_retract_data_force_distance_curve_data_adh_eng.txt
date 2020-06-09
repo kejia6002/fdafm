@@ -1,0 +1,7 @@
+Sample_Name	Adhesive_Energy_aJ
+sample_reversed_retract_data_force_distance_curve_data/READSTART180424_fv_paeru_loc1-9-0.spm.out.corrected.txt	31.0102339268
+sample_reversed_retract_data_force_distance_curve_data/READSTART180424_fv_paeru_loc1-9-3.spm.out.corrected.txt	74.7495223303
+sample_reversed_retract_data_force_distance_curve_data/READSTART180424_fv_pmon2_loc1-18-22.spm.out.corrected.txt	5725.04549058
+sample_reversed_retract_data_force_distance_curve_data/READSTART180424_fv_sc_loc1-2-102.spm.out.corrected.txt	23.1448703706
+sample_reversed_retract_data_force_distance_curve_data/READSTART180424_fv_sc_loc1-2-105.spm.out.corrected.txt	56.5513275945
+sample_reversed_retract_data_force_distance_curve_data/READSTART180424_fv_sc_loc1-2-98.spm.out.corrected.txt	49.1692789342
