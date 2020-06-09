@@ -7,7 +7,7 @@ Created on Mon May  6 17:22:12 2019
 """
 from __future__ import division
 import matplotlib
-matplotlib.use('Agg') #to let it work under windows environment. if its running under linux (mac or linux), no need to include this line
+#matplotlib.use('Agg') #to let it work under windows environment. if its running under linux (mac or linux), no need to include this line
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -46,24 +46,25 @@ output_paths = [os.path.join(output_directory, i) for i in output_file_list]
 sample_name_list, rpl_eng_list = [],[]
 
 
-def transform(x,y):
-    new_x = []
+def transform(y):#changed line
+
     new_y = []
     for i in y:
         if i<0:
             i = 0
         new_y.append(i)
-    for i in x:
-        if i<0:
-            i = 0
-        new_x.append(i)
-    return new_x, new_y
 
-def cal_rpl_eng(x,y):
+    return new_y
+
+def cal_rpl_eng(x,y):#changed line
     total_area = 0
-    for i in range(len(x)-1):
-        total_area = total_area + abs(((y[i] + y[i+1]) * (x[i+1] - x[i]))/2)
-    return total_area
+    for i in range(len(x)-1,0,-1):
+        if x[i-1] < 0:
+            total_area = total_area + (y[i] + y[i-1]) * x[i]/2
+            break
+        total_area = total_area + abs(((y[i] + y[i-1]) * (x[i] - x[i-1]))/2)
+        
+    return i,total_area
 
 for in_file, out_file in zip(input_paths, output_paths):
     
@@ -72,19 +73,20 @@ for in_file, out_file in zip(input_paths, output_paths):
     distance = df[df.columns[0]]
     force = df[df.columns[1]]
 
-    transformed_distance, transformed_force = transform(distance,force)
+    transformed_force = transform(force)#changed line
     
-    if len(transformed_distance) != len(transformed_force):
+    if len(distance) != len(transformed_force):#changed line
         pass
         print "transform distance/force failed"
     else:
-        rpl_eng_aj = cal_rpl_eng(transformed_distance,transformed_force)
+        x_stop,rpl_eng_aj = cal_rpl_eng(distance,transformed_force)#changed line
         sample_name_list.append(in_file)
         rpl_eng_list.append(rpl_eng_aj)
         with open(out_file, "w") as out_file_handle:
             print_rpl_eng = 'repulsive energy = ' + str(round(rpl_eng_aj,2)) + ' aJ'
             plt.figure()
-            plt.scatter(distance, force, s=0.5, color='black')
+            plt.scatter(distance[0:x_stop], force[0:x_stop], s=3, color='red') #changed line
+            plt.scatter(distance[x_stop:], force[x_stop:], s=0.5, color='black') #changed line
             plt.annotate(print_rpl_eng, xy= (0,0), xytext=(100, 2))
             plt.axhline(0, color='blue')
             plt.axvline(0, color='blue')
@@ -96,7 +98,7 @@ for in_file, out_file in zip(input_paths, output_paths):
             plt.savefig(out_file)
             plt.close()
 
-with open(sample_summary, "w") as summary:
+with open(sample_summary, "write") as summary:
     header = 'Sample_Name' + '\t' + 'Repulsive_Energy_aJ'
     summary.write(header)
     summary.write('\n')

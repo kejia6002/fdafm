@@ -1,6 +1,13 @@
-# fdafm
+# fdafm version 2.0
 
 Analyzing atomic force microscopy (Multimode NanoScrope IIId AFM Bruker) force-distance curve raw data to extrapolate adhesive force, adhesive energy, rupture length, repulsive energy, repulsive distance and sample indentation length.
+
+#This version of fdafm made several key updates including:
+1. implement a more rigorous algorithm to transform original deflection-displacement curved to force-distance curves for both approach and separation phases
+2. implement a more rigorous algorithm to calculate the repulsive energy
+3. allow users to customize the baseline region when calculate repulsive length and rupture length
+4. provided more details regarding how repulsive length and rupture length are calculated
+5. provided a bash file named all_commands.sh that includes all commands in the data analysis pipeline to reduce the workload of data analysis procedure
 
 # Contact
 
@@ -19,10 +26,12 @@ matplotlib.use('Agg')
 	all of the python scripts related are included in library
 2. test_data:
 
-	some examplary standard input files that one can learn: 1. what a standard input file looks like; 2. run it through the pipeline and compare it to the test_run_result_example
+	some examplary standard input files that one can learn: 1. what a standard input file looks like; 2. how to run it through the pipeline and compare it to the test_run_result_example
 3. test_run_result_example:
 
-	the examplary output of fdafm 
+	the examplary output of fdafm, which was the output from running the pipeline descirbed down below 
+4. all_commands.sh
+	this is a bash file that included all commands in the data analysis pipeline described under section #usage. For re-running the whole pipeline with the provided test_data as input, you can simply run this file in command line under fd_afm directory, or you can follow the instructions under #usage section to run each command step by step. If you are running your own data, you will need to run the first two steps one by one in the pipeline to obtain your own probe sensitivity values, and revise all_commands.sh with your own sensitivity values and probe spring constant before you run the rest of the bash script (I provided instructions in all_commands.sh)
 	
 # Installation
 
@@ -66,9 +75,9 @@ pip install seaborn
 	
 	cd test_data *please note that this step is necessary*
 	
-	test_data$ python ../library/afm_original_data_prep.py sensitivity_calibration ../test_run/
+	python ../library/afm_original_data_prep.py sensitivity_calibration ../test_run/
 	
-	test_data$ python ../library/afm_original_data_prep.py sample ../test_run/
+	python ../library/afm_original_data_prep.py sample ../test_run/
 	
 
 2.  sensitivity calculation
@@ -77,13 +86,13 @@ pip install seaborn
 	
 	2. Pass the input data as a folder to sens_cal.py. This script outputs a .txt file (output_directory + input_directory + senscal.txt), which records both extending sensitivity and retracting sensitivity (the unit of both sensitivity is V/nm) of the probe extrapolated by each measurement.
 	
-	run: python sens_cal.py input_directory output_directory
+	run: python sens_cal.py input_directory output_directory/
 
 	example:
 	
-	test_data$ cd ../test_run/
+	cd ../test_run/
 	
-	test_run$ python ../library/sens_cal.py sensitivity_calibration_reversed .
+	python ../library/sens_cal.py sensitivity_calibration_reversed ./
 
 3.  retraction curve analysis
 
@@ -91,7 +100,9 @@ pip install seaborn
 
 	This script produces:
 	
-	 1. a summary file that records the indentation length and adhesive force of each measurement
+	 1. a summary file that records the indentation length and adhesive force of each measurement 
+
+	 	Please note that although a slight fluctuation of indentation length around zero were observed for measurements on stiff samples (sc) of test_data, that might be resulted from measurement errors (e.g. slight probe sensitivity change potentially due to a variation of laser reflection or interference from environment) or data analysis artifacts (e.g. artifacts from analyzing undulating sensitivity line), the indentation length of soft samples (all samples other than sc, which were biofilm modified coverslips) were significantly higher than the ones of stiff samples, suggesting that indentation length is effective in distinguishing between soft and stiff samples.
 	 
 	 2. a folder of all the interaction force-separation distance plots for retraction data
 	 
@@ -99,11 +110,11 @@ pip install seaborn
 	 
 	run: 
 	
-	python retract_data_indlen_adhfor_fd_transform.py input_directory output_directory probe_extending_sensitivity(V/nm) probe_retracting_sensitivity(V/nm) probe_spring_constant(N/m)
+	python retract_data_indlen_adhfor_fd_transform.py input_directory output_directory/ probe_extending_sensitivity(V/nm) probe_retracting_sensitivity(V/nm) probe_spring_constant(N/m)
 
 	example:
 
-	test_run$ python ../library/retract_data_indlen_adhfor_fd_transform.py sample_reversed ./ 0.04 0.04 0.318
+	python ../library/retract_data_indlen_adhfor_fd_transform.py sample_reversed ./ 0.041423406 0.04043781 0.3188
 
 
 4.  extending curve analysis
@@ -118,13 +129,13 @@ pip install seaborn
 	 
 	run:
 	
-	python approach_data_fd_transformation.py input_directory output_directory probe_extending_sensitivity probe_spring_constants
+	python approach_data_fd_transformation.py input_directory output_directory/ probe_extending_sensitivity probe_spring_constants
 
 	example:
 	
-	test_run$ python ../library/approach_data_fd_transformation.py sample_reversed ./ 0.04 0.3188
+	python ../library/approach_data_fd_transformation.py sample_reversed ./ 0.041423406 0.3188
 
-5.  analyze the adhesive energy of all retracting data 
+5.  analyze the adhesive energy of all retracting data (an integration of the area in the fourth quadrant and above the force distance curve)
 
 	Passing the folder of force_distance data (produced from step 3.3) to retract_adh_eng.py to analyze the adhesive energy from retracting data. 
 
@@ -136,13 +147,13 @@ pip install seaborn
 	
 	run:
 	
-	python retract_adh_eng.py input_directory output_directory
+	python retract_adh_eng.py input_directory output_directory/
 
 	example:
 	
 	python ../library/retract_adh_eng.py sample_reversed_retract_data_force_distance_curve_data retract_adheng/
 
-6.  analyze the repulsive energy of all extending data
+6.  analyze the repulsive energy of all extending data (an integration of the area in the first quadrant that below the force distance curve)
 
 	Passing the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive energy from the extending data.
 
@@ -154,13 +165,15 @@ pip install seaborn
 	
 	run:
 	
-	python approach_rpl_energy.py input_directory output_directory
+	python approach_rpl_energy.py input_directory output_directory/
 
 	example:
 	
-	ub/test_run$ python ../library/approach_rpl_energy.py sample_reversed_extending_force_distance_curve_data approach_rpleng/
+	python ../library/approach_rpl_energy.py sample_reversed_extending_force_distance_curve_data approach_rpleng/
 
-7.  analyze the rupture length of all retracting curves
+7.  analyze the rupture length of all retracting curves 
+
+	This algorithm finds and outputs the x-value of the first point in a force-distance curve that has y-value inside the range of baseline, that was defined as the mean of y-value of the user-defined baseline region minus 3 times of standard deviation of the baseline region y-value.  
 
 	Passing the folder of force_distance data (produced from step 3.3) to retract_ruplen_v2.py to analyze the rupture length from retracting data. 
 
@@ -172,13 +185,15 @@ pip install seaborn
 	
 	run:
 	
-	python retract_ruplen_v2.py input_directory output_directory
+	python retract_ruplen_v2.py input_directory output_directory/ 150
 
 	example:
 	
-	test_run$ python ../library/retract_ruplen_v2.py sample_reversed_retract_data_force_distance_curve_data retract_ruplen/
+	python ../library/retract_ruplen_v2.py sample_reversed_retract_data_force_distance_curve_data retract_ruplen/ 150
 
 8.  analyze the repulsive distance of all extending curves
+	
+	This algorithm finds and outputs the x-value of the first point in a force-distance curve that has y-value inside the range of baseline, that was defined as the mean of y-value of the user-defined baseline region plus 3 times of standard deviation of the baseline region y-value.
 
 	Passing the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive distance from the extending data.
 
@@ -190,13 +205,16 @@ pip install seaborn
 	
 	run:
 	
-	python approach_rpllen_v2.py input_directory output_directory
+	python approach_rpllen_v2.py input_directory output_directory/ 150
 
 	example:
 	
-	test_run$ python ../library/approach_rpllen_v2.py sample_reversed_extending_force_distance_curve_data approach_rpllen/
+	python ../library/approach_rpllen_v2.py sample_reversed_extending_force_distance_curve_data approach_rpllen/ 150
 
+9. merge the summary files output from step 3 to 8 together as a tab-deliminated txt file
 
+   run:
+   python ../library/summary.py
 
 
 
