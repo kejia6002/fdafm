@@ -1,1 +1,0 @@
-Sample_Name	Rupture_Length_nm	Baseline_y_std_nN
