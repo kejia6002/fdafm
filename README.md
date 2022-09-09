@@ -1,70 +1,43 @@
 # fdafm version 2.0
-
-Analyzing atomic force microscopy (Multimode NanoScrope IIId AFM Bruker) force-distance curve raw data to extrapolate adhesive force, adhesive energy, rupture length, repulsive energy, repulsive distance and sample indentation length.
-
-#This version of fdafm made several key updates including:
-1. implement a more rigorous algorithm to transform original deflection-displacement curved to force-distance curves for both approach and separation phases
-2. implement a more rigorous algorithm to calculate the repulsive energy
-3. allow users to customize the baseline region when calculate repulsive length and rupture length
-4. provided more details regarding how repulsive length and rupture length are calculated
-5. provided a bash file named all_commands.sh that includes all commands in the data analysis pipeline to reduce the workload of data analysis procedure
+This software enables a user with basic knowledge in command line tools to analyze atomic force microscopy (Multimode NanoScrope IIId AFM Bruker) force-distance curve raw data to extrapolate adhesive force, adhesive energy, rupture length, repulsive energy, repulsive distance and sample indentation length.
 
 # Contact
-
 If you have any questions, please feel free to reach out to Yue Zhang (yuezhang@jhu.edu)
 
 # Implementation
+All the scripts were written in python 2.7.16. 
 
-All the scripts were implemented in python 2.7.16. 
-
-If you are using windows system to run the scripts, please make sure that you have this line in the front for all the scripts using matplotlib:
+# notes
+If you are using windows system, please make sure to include this line in front of all scripts using matplotlib:
 matplotlib.use('Agg')
 
 # Inventory
 1. library:
 
-	all of the python scripts related are included in library
+	This directory contains all of the AFM data analysis modules implemented in Python
 2. test_data:
 
-	some examplary standard input files that one can learn: 1. what a standard input file looks like; 2. how to run it through the pipeline and compare it to the test_run_result_example
+	This directory contains some examplary input files. It is recommended to run the whole pipeline with these test data step-by-step as a test run to check if all modules are running properly
 3. test_run_result_example:
 
-	the examplary output of fdafm, which was the output from running the pipeline descirbed down below 
+	the examplary output of fdafm, which was the produced by running the pipeline descirbed down below 
 4. all_commands.sh
-	this is a bash file that included all commands in the data analysis pipeline described under section #usage. For re-running the whole pipeline with the provided test_data as input, you can simply run this file in command line under fd_afm directory, or you can follow the instructions under #usage section to run each command step by step. If you are running your own data, you will need to run the first two steps one by one in the pipeline to obtain your own probe sensitivity values, and revise all_commands.sh with your own sensitivity values and probe spring constant before you run the rest of the bash script (I provided instructions in all_commands.sh)
+	this is a bash script that records all commands in the data analysis pipeline described under the section #usage. If you are running your own data, you will need to run the first two steps one by one in the pipeline to calculate your own probe sensitivity values first. After that, you may revise all_commands.sh with your own sensitivity values and probe spring constant before running the rest of the commands (I have provided instructions in all_commands.sh)
 	
 # Installation
+The algorithms were implemented in Python 2.7. Several libraries are required. Install the packages by running:
 
-The algorithms were written in Python 2.7. Several packages might be required. Install the packages by running:
-
-pip install matplotlib
-
-pip install pandas
-
-pip install numpy
-
-pip install scipy
-
-pip install sys
-
-pip install os
-
-pip install math
-
-pip install seaborn
+pip install matplotlib pandas numpy scipy sys os math seaborn
 
 #Usage
-
 1.  data prep
 	1. raw data 
 	
-	The raw data output by Multimode NanoScrope IIId AFM (Bruker) were imported to software NanoScope Analysis (32 bit, version 1.5) in order to convert the raw data file to ASCII format. Under "ASCII Export" interface, choose "Native" as Units and  "Extend", "Retract" and "Ramp" as Force Curve Options. By doing so, the output file now is a tab-deliminated .txt file with four columns in order -- "Calc_Ramp_Ex_nm", "Cal_Ramp_Rt_nm", "Defl_V_Ex", "Defl_V_Rt", which is the standard input file of fdafm.
+	The raw data output by Multimode NanoScrope IIId AFM (Bruker) should be imported to software NanoScope Analysis (32 bit, version 1.5) to convert them to ASCII format. In specific, under "ASCII Export" interface, choose "Native" as Units and  "Extend", "Retract" and "Ramp" as Force Curve Options. By doing so, the output file now is a tab-deliminated .txt file having four columns in order -- "Calc_Ramp_Ex_nm", "Cal_Ramp_Rt_nm", "Defl_V_Ex", "Defl_V_Rt". This is the standard input file format of fdafm.
 	
 	2. input data prep
-	
-	Put the standard input files in a folder and change directory to the folder contains this folder.
 
-	The columns of "Cal_Ramp_Rt_nm" and "Defl_V_Ex" are in reversed order. To make the order right, run:
+	Currently, the data in the columns of "Cal_Ramp_Rt_nm" and "Defl_V_Ex" are in the reversed order. Therefore, the first step is to correct this, run:
 	python afm_original_data_prep.py input_directory output directory/
 	
 	example:
