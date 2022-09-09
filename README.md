@@ -8,7 +8,7 @@ If you have any questions, please feel free to reach out to Yue Zhang (yuezhang@
 All the scripts were written in python 2.7.16. 
 
 # Notes
-If you are using windows system, please make sure to include this line in front of all scripts using matplotlib:
+If you are using the windows system, please make sure to include this line in front of all scripts using matplotlib:
 matplotlib.use('Agg')
 
 # Inventory
@@ -17,12 +17,12 @@ matplotlib.use('Agg')
 	This directory contains all of the AFM data analysis modules implemented in Python
 2. test_data:
 
-	This directory contains some examplary input files. It is recommended to run the whole pipeline with these test data step-by-step as a test run to check if all modules are running properly
+	This directory contains some exemplary input files. It is recommended to run the whole pipeline with these test data step-by-step as a test run to check if all modules are running properly
 3. test_run_result_example:
 
-	the examplary output of fdafm, which was the produced by running the pipeline descirbed down below 
+	The exemplary output of fdafm, which was produced by running the pipeline described down below 
 4. all_commands.sh
-	this is a bash script that records all commands in the data analysis pipeline described under the section #usage. If you are running your own data, you will need to run the first two steps one by one in the pipeline to calculate your own probe sensitivity values first. After that, you may revise all_commands.sh with your own sensitivity values and probe spring constant before running the rest of the commands (I have provided instructions in all_commands.sh)
+	This bash script records all commands in the data analysis pipeline described under section #usage. If you are running your data, you will need to run the first two steps one by one in the pipeline to calculate your own probe sensitivity values first. After that, you may revise all_commands.sh with your own sensitivity values and probe spring constant before running the rest of the commands (I have provided instructions in all_commands.sh)
 	
 # Installation
 The algorithms were implemented in Python 2.7. Several libraries are required. Install the packages by running:
@@ -30,163 +30,161 @@ The algorithms were implemented in Python 2.7. Several libraries are required. I
 pip install matplotlib pandas numpy scipy sys os math seaborn
 
 #Usage
-1.  data prep
+1. data prep
 	1. raw data 
 	
-	The raw data output by Multimode NanoScrope IIId AFM (Bruker) should be imported to software NanoScope Analysis (32 bit, version 1.5) to convert them to ASCII format. In specific, under "ASCII Export" interface, choose "Native" as Units and  "Extend", "Retract" and "Ramp" as Force Curve Options. By doing so, the output file now is a tab-deliminated .txt file having four columns in order -- "Calc_Ramp_Ex_nm", "Cal_Ramp_Rt_nm", "Defl_V_Ex", "Defl_V_Rt". This is the standard input file format of fdafm.
+	The raw data output by Multimode NanoScrope IIId AFM (Bruker) should be imported to software NanoScope Analysis (32-bit, version 1.5) to convert into ASCII format. In specific, under "ASCII Export" interface, choose "Native" as Units and "Extend", "Retract", and "Ramp" as Force Curve Options. By doing so, the output file now is a tab-delimited .txt file having four columns in order -- "Calc_Ramp_Ex_nm", "Cal_Ramp_Rt_nm", "Defl_V_Ex", "Defl_V_Rt". This is the standard input file format of fdafm.
 	
 	2. input data prep
 
-	Currently, the data in the columns of "Cal_Ramp_Rt_nm" and "Defl_V_Ex" are in the reversed order. Therefore, the first step is to correct this, run:
-	python afm_original_data_prep.py input_directory output directory/
+	Currently, the data in the columns of "Cal_Ramp_Rt_nm" and "Defl_V_Ex" are in reversed order. Therefore, the first step is to correct this, run:
+	Python afm_original_data_prep.py input_directory output directory/
 	
-	example:
+	Example:
 	
 	cd fdafm
 	
 	mkdir test_run
 	
-	cd test_data *please note that this step is necessary*
+	cd test_data *Please note that this step is necessary*
 	
 	python ../library/afm_original_data_prep.py sensitivity_calibration ../test_run/
 	
 	python ../library/afm_original_data_prep.py sample ../test_run/
 	
 
-2.  sensitivity calculation
+2. sensitivity calculation
 
-	1. change directory to the output directory in last step
+	1. change directory to the output directory in the last step
 	
-	2. Pass the input data as a folder to sens_cal.py. This script outputs a .txt file (output_directory + input_directory + senscal.txt), which records both extending sensitivity and retracting sensitivity (the unit of both sensitivity is V/nm) of the probe extrapolated by each measurement.
+	2. Pass the input data directory to sens_cal.py. This script outputs a .txt file (named "output_directory_input_directory_senscal.txt"), which records the calculated probe sensitivity for both approaching and retraction phases (the unit of both sensitivities is V/nm).
 	
 	run: python sens_cal.py input_directory output_directory/
 
-	example:
+	Example:
 	
 	cd ../test_run/
 	
 	python ../library/sens_cal.py sensitivity_calibration_reversed ./
 
-3.  retraction curve analysis
+3. retraction curve analysis
 
-	to transform the original deflection-displacement raw data recorded during retracting the probe to interaction force-separation distance curve, run retract_data_indlen_adhfor_fd_transform.py
+	To transform the original deflection-displacement raw data under the retraction phase into interaction force-separation distance curves, run retract_data_indlen_adhfor_fd_transform.py
 
 	This script produces:
 	
-	 1. a summary file that records the indentation length and adhesive force of each measurement 
-
-	 	Please note that although a slight fluctuation of indentation length around zero were observed for measurements on stiff samples (sc) of test_data, that might be resulted from measurement errors (e.g. slight probe sensitivity change potentially due to a variation of laser reflection or interference from environment) or data analysis artifacts (e.g. artifacts from analyzing undulating sensitivity line), the indentation length of soft samples (all samples other than sc, which were biofilm modified coverslips) were significantly higher than the ones of stiff samples, suggesting that indentation length is effective in distinguishing between soft and stiff samples.
+	 1. a summary file that records the indentation length and adhesive force for each measurement 
 	 
-	 2. a folder of all the interaction force-separation distance plots for retraction data
+	 2. a folder of all the interaction force-separation distance plots. Users should visually check many plots, if not all, to evaluate if the data transformation is satisfactory
 	 
-	 3. a folder of force_distance data (.txt files) where each file records the separation distance and interaction force for each measurement for downstream analysis
+	 3. a folder of all the interaction force-separation distance data (.txt files). This folder will be used for downstream analysis
 	 
-	run: 
+	Run: 
 	
 	python retract_data_indlen_adhfor_fd_transform.py input_directory output_directory/ probe_extending_sensitivity(V/nm) probe_retracting_sensitivity(V/nm) probe_spring_constant(N/m)
 
-	example:
+	Example:
 
 	python ../library/retract_data_indlen_adhfor_fd_transform.py sample_reversed ./ 0.041423406 0.04043781 0.3188
 
 
-4.  extending curve analysis
+4. extending (approaching) curve analysis
 
-	transform the raw data of extending curve to interaction force-separation distance curve by running approach_data_fd_transformation.py
+	Transform the raw data of extending curve to interaction force-separation distance curve by running approach_data_fd_transformation.py
 	
 	 This script produces:
 	 
-	 1. a folder of all the interaction force-separation distance plots for extending data
+	 1. a folder of all the interaction force-separation distance plots. Users should visually check many plots, if not all, to evaluate if the data transformation is satisfactory
 	 
-	 2. a folder of force-distance data (.txt files) where each file records the separation distance and interaction force for each measurement for downstream analysis
+	 2. a folder of all the interaction force-separation distance data (.txt files). This folder will be used for downstream analysis
 	 
-	run:
+	Run:
 	
 	python approach_data_fd_transformation.py input_directory output_directory/ probe_extending_sensitivity probe_spring_constants
 
-	example:
+	Example:
 	
 	python ../library/approach_data_fd_transformation.py sample_reversed ./ 0.041423406 0.3188
 
-5.  analyze the adhesive energy of all retracting data (an integration of the area in the fourth quadrant and above the force distance curve)
+5. analyze the adhesive energy of all retracting curves (an integration of the approximate area in the fourth quadrant and above the force-distance curve)
 
-	Passing the folder of force_distance data (produced from step 3.3) to retract_adh_eng.py to analyze the adhesive energy from retracting data. 
+	Pass the folder of force_distance data (produced from step 3.3) to retract_adh_eng.py to analyze the adhesive energy from retracting data. 
 
 	This script produces:
 	
-	1. a folder of all interaction force-separation distance plots denoted with the number of adhesive energy.
+	1. a folder of all interaction force-separation distance plots denoted with the associated adhesive energy.
 	
-	2. a summary file that documents adhesive energy of all files in the input_directory
+	2. a summary file that documents the adhesive energy of all files in the input directory
 	
-	run:
+	Run:
 	
 	python retract_adh_eng.py input_directory output_directory/
 
-	example:
+	Example:
 	
 	python ../library/retract_adh_eng.py sample_reversed_retract_data_force_distance_curve_data retract_adheng/
 
-6.  analyze the repulsive energy of all extending data (an integration of the area in the first quadrant that below the force distance curve)
+6. analyze the repulsive energy of all extending data (an integration of the approximate area in the first quadrant that is below the force-distance curve)
 
-	Passing the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive energy from the extending data.
+	Pass the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive energy of the extending curves.
 
 	This script produces:
 	
-	1. a folder of all interaction force-separation distance plots denoted with the number of repulsive energy.
+	1. a folder of all interaction force-separation distance plots denoted with the associated repulsive energy.
 	
-	2. a summary file that documents repulsive energy of all files in the input_directory
+	2. a summary file that documents the repulsive energy of all files in the input directory
 	
-	run:
+	Run:
 	
 	python approach_rpl_energy.py input_directory output_directory/
 
-	example:
+	Example:
 	
 	python ../library/approach_rpl_energy.py sample_reversed_extending_force_distance_curve_data approach_rpleng/
 
-7.  analyze the rupture length of all retracting curves 
+7. analyze the rupture length of all retracting curves 
 
-	This algorithm finds and outputs the x-value of the first point in a force-distance curve that has y-value inside the range of baseline, that was defined as the mean of y-value of the user-defined baseline region minus 3 times of standard deviation of the baseline region y-value.  
+	This algorithm finds the approximate location where a retraction curve returns to the baseline range from the adhesive region (below the x-axis). Specifically, it outputs the x-axis value of the first point on a force-distance curve with a y-value higher than the lower bound of the baseline region (i.e., the mean of the y-axis value of the user-defined baseline region minus 3 times the standard deviation).  
 
-	Passing the folder of force_distance data (produced from step 3.3) to retract_ruplen_v2.py to analyze the rupture length from retracting data. 
+	Pass the folder of force_distance data (produced from step 3.3) to retract_ruplen_v2.py to analyze the rupture length from retracting data. 
 
 	This script produces:
 	
-	1. a folder of all interaction force-separation distance plots denoted with the number of rupture length.
+	1. a folder of all interaction force-separation distance plots denoted with the associated rupture length.
 	
-	2. a summary file that documents rupture length of all files in the input_directory
+	2. a summary file that documents the rupture length of all files in the input directory
 	
-	run:
+	Run:
 	
 	python retract_ruplen_v2.py input_directory output_directory/ 150
 
-	example:
+	Example:
 	
 	python ../library/retract_ruplen_v2.py sample_reversed_retract_data_force_distance_curve_data retract_ruplen/ 150
 
-8.  analyze the repulsive distance of all extending curves
+8. analyze the repulsive distance of all extending curves
 	
-	This algorithm finds and outputs the x-value of the first point in a force-distance curve that has y-value inside the range of baseline, that was defined as the mean of y-value of the user-defined baseline region plus 3 times of standard deviation of the baseline region y-value.
+	This algorithm finds the approximate location where an extending curve returns to the baseline range from the repulsion region (above the x-axis). Specifically, it outputs the x-axis value of the first point on an extending curve with a y-axis value lower than the upper bound of the baseline region (i.e., the mean of the y-axis value of the user-defined baseline region plus 3 times the standard deviation).
 
-	Passing the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive distance from the extending data.
+	Pass the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive distance from the extending data.
 
 	This script produces:
 	
-	1. a folder of all interaction force-separation distance plots denoted with the number of repulsive distance.
+	1. a folder of all interaction force-separation distance plots denoted with the associated repulsive distance.
 	
-	2. a summary file that documents repulsive distance of all files in the input_directory	
+	2. a summary file that documents the repulsive distance of all files in the input directory	
 	
-	run:
+	Run:
 	
 	python approach_rpllen_v2.py input_directory output_directory/ 150
 
-	example:
+	Example:
 	
 	python ../library/approach_rpllen_v2.py sample_reversed_extending_force_distance_curve_data approach_rpllen/ 150
 
-9. merge the summary files output from step 3 to 8 together as a tab-deliminated txt file
+9. merge the summary files output from steps 3 to 8 together as a txt file
 
-   run:
+   Run:
    python ../library/summary.py
 
 
@@ -199,3 +197,4 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 
 
 
+![image](https://user-images.githubusercontent.com/23330368/189390906-ea945aac-e7eb-4e25-b63a-b180fe63b117.png)
