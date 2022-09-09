@@ -22,20 +22,21 @@ matplotlib.use('Agg')
 
 	The exemplary output of fdafm, which was produced by running the pipeline described down below 
 4. all_commands.sh
+	
 	This bash script records all commands in the data analysis pipeline described under section #usage. If you are running your data, you will need to run the first two steps one by one in the pipeline to calculate your own probe sensitivity values first. After that, you may revise all_commands.sh with your own sensitivity values and probe spring constant before running the rest of the commands (I have provided instructions in all_commands.sh)
 	
 # Installation
-The algorithms were implemented in Python 2.7. Several libraries are required. Install the packages by running:
+Several libraries are required. Install the packages by running:
 
 pip install matplotlib pandas numpy scipy sys os math seaborn
 
-#Usage
-1. data prep
+# Usage
+1. data preprocessing
 	1. raw data 
 	
-	The raw data output by Multimode NanoScrope IIId AFM (Bruker) should be imported to software NanoScope Analysis (32-bit, version 1.5) to convert into ASCII format. In specific, under "ASCII Export" interface, choose "Native" as Units and "Extend", "Retract", and "Ramp" as Force Curve Options. By doing so, the output file now is a tab-delimited .txt file having four columns in order -- "Calc_Ramp_Ex_nm", "Cal_Ramp_Rt_nm", "Defl_V_Ex", "Defl_V_Rt". This is the standard input file format of fdafm.
+	The raw data output by Multimode NanoScrope IIId AFM (Bruker) should be imported to software NanoScope Analysis (32-bit, version 1.5) to convert into ASCII format. In specific, under "ASCII Export" interface, choose "Native" as Units and "Extend", "Retract", and "Ramp" as Force Curve Options. By doing so, the output file now is a tab-delimited .txt file having four columns in order -- "Calc_Ramp_Ex_nm", "Cal_Ramp_Rt_nm", "Defl_V_Ex", "Defl_V_Rt". This is the standard input file format.
 	
-	2. input data prep
+	2. input data preparation
 
 	Currently, the data in the columns of "Cal_Ramp_Rt_nm" and "Defl_V_Ex" are in reversed order. Therefore, the first step is to correct this, run:
 	Python afm_original_data_prep.py input_directory output directory/
@@ -57,9 +58,9 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 
 	1. change directory to the output directory in the last step
 	
-	2. Pass the input data directory to sens_cal.py. This script outputs a .txt file (named "output_directory_input_directory_senscal.txt"), which records the calculated probe sensitivity for both approaching and retraction phases (the unit of both sensitivities is V/nm).
+	2. Pass the input data directory to sens_cal.py. This script outputs a .txt file that records the calculated probe sensitivity for both approaching and retraction phases (the unit of both sensitivities is V/nm).
 	
-	run: python sens_cal.py input_directory output_directory/
+	Run: python sens_cal.py input_directory output_directory/
 
 	Example:
 	
@@ -69,11 +70,11 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 
 3. retraction curve analysis
 
-	To transform the original deflection-displacement raw data under the retraction phase into interaction force-separation distance curves, run retract_data_indlen_adhfor_fd_transform.py
+	To transform the original deflection-displacement data under the retraction phase into interaction force-separation distance curves, run retract_data_indlen_adhfor_fd_transform.py
 
-	This script produces:
+	This step produces:
 	
-	 1. a summary file that records the indentation length and adhesive force for each measurement 
+	 1. a summary file that records the extrapolated indentation length and adhesive force for each measurement 
 	 
 	 2. a folder of all the interaction force-separation distance plots. Users should visually check many plots, if not all, to evaluate if the data transformation is satisfactory
 	 
@@ -90,9 +91,9 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 
 4. extending (approaching) curve analysis
 
-	Transform the raw data of extending curve to interaction force-separation distance curve by running approach_data_fd_transformation.py
+	Transform the raw data of the extending curve into interaction force-separation distance curves by running approach_data_fd_transformation.py
 	
-	 This script produces:
+	 This step produces:
 	 
 	 1. a folder of all the interaction force-separation distance plots. Users should visually check many plots, if not all, to evaluate if the data transformation is satisfactory
 	 
@@ -106,11 +107,11 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 	
 	python ../library/approach_data_fd_transformation.py sample_reversed ./ 0.041423406 0.3188
 
-5. analyze the adhesive energy of all retracting curves (an integration of the approximate area in the fourth quadrant and above the force-distance curve)
+5. calculate the adhesive energy of all retracting curves (an integration of the approximate area in the fourth quadrant and is above the force-distance curve)
 
-	Pass the folder of force_distance data (produced from step 3.3) to retract_adh_eng.py to analyze the adhesive energy from retracting data. 
+	Pass the folder of force_distance data (produced from step 3.3) to retract_adh_eng.py to calculate the adhesive energy. 
 
-	This script produces:
+	This step produces:
 	
 	1. a folder of all interaction force-separation distance plots denoted with the associated adhesive energy.
 	
@@ -124,11 +125,11 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 	
 	python ../library/retract_adh_eng.py sample_reversed_retract_data_force_distance_curve_data retract_adheng/
 
-6. analyze the repulsive energy of all extending data (an integration of the approximate area in the first quadrant that is below the force-distance curve)
+6. calculate the repulsive energy of all extending data (an integration of the approximate area in the first quadrant and is below the force-distance curve)
 
-	Pass the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive energy of the extending curves.
+	Pass the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to calculate the repulsive energy of the extending curves.
 
-	This script produces:
+	This step produces:
 	
 	1. a folder of all interaction force-separation distance plots denoted with the associated repulsive energy.
 	
@@ -142,13 +143,13 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 	
 	python ../library/approach_rpl_energy.py sample_reversed_extending_force_distance_curve_data approach_rpleng/
 
-7. analyze the rupture length of all retracting curves 
+7. extrapolate the rupture length of all retracting curves 
 
 	This algorithm finds the approximate location where a retraction curve returns to the baseline range from the adhesive region (below the x-axis). Specifically, it outputs the x-axis value of the first point on a force-distance curve with a y-value higher than the lower bound of the baseline region (i.e., the mean of the y-axis value of the user-defined baseline region minus 3 times the standard deviation).  
 
-	Pass the folder of force_distance data (produced from step 3.3) to retract_ruplen_v2.py to analyze the rupture length from retracting data. 
+	Pass the folder of the force_distance data (produced from step 3.3) to retract_ruplen_v2.py to extrapolate the rupture length from retracting data. 
 
-	This script produces:
+	This step produces:
 	
 	1. a folder of all interaction force-separation distance plots denoted with the associated rupture length.
 	
@@ -156,19 +157,19 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 	
 	Run:
 	
-	python retract_ruplen_v2.py input_directory output_directory/ 150
+	python retract_ruplen_v2.py input_directory output_directory/ user-defined baseline region (i.e., the number of data points counting from the end should be considered as the baseline region ; for example, "150" in the following example tells the program that the last 150 points should be considered as the baseline region in each curve)
 
 	Example:
 	
 	python ../library/retract_ruplen_v2.py sample_reversed_retract_data_force_distance_curve_data retract_ruplen/ 150
 
-8. analyze the repulsive distance of all extending curves
+8. extrapolate the repulsive distance of all extending curves
 	
-	This algorithm finds the approximate location where an extending curve returns to the baseline range from the repulsion region (above the x-axis). Specifically, it outputs the x-axis value of the first point on an extending curve with a y-axis value lower than the upper bound of the baseline region (i.e., the mean of the y-axis value of the user-defined baseline region plus 3 times the standard deviation).
+	This algorithm finds the approximate location where an extending curve returns to the baseline range from the repulsive region (above the x-axis). Specifically, it outputs the x-axis value of the first point on an extending curve with a y-axis value lower than the upper bound of the baseline region (i.e., the mean of the y-axis value of the user-defined baseline region plus 3 times the standard deviation).
 
-	Pass the folder of force_distance data (produced from step 4.3) to approach_rpl_energy.py to analyze the repulsive distance from the extending data.
+	Pass the folder of the force_distance data (produced from step 4.3) to approach_rpl_energy.py to extrapolate the repulsive distance from the extending data.
 
-	This script produces:
+	This step produces:
 	
 	1. a folder of all interaction force-separation distance plots denoted with the associated repulsive distance.
 	
@@ -176,13 +177,13 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 	
 	Run:
 	
-	python approach_rpllen_v2.py input_directory output_directory/ 150
+	python approach_rpllen_v2.py input_directory output_directory/ user-defined baseline region (i.e., the number of data points counting from the end should be considered as the baseline region ; for example, "150" in the following example tells the program that the last 150 points should be considered as the baseline region in each curve)
 
 	Example:
 	
 	python ../library/approach_rpllen_v2.py sample_reversed_extending_force_distance_curve_data approach_rpllen/ 150
 
-9. merge the summary files output from steps 3 to 8 together as a txt file
+9. merge the summary files output from steps 3 to 8 as a single .txt file with each characteristics as one column 
 
    Run:
    python ../library/summary.py
