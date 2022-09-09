@@ -7,7 +7,7 @@ If you have any questions, please feel free to reach out to Yue Zhang (yuezhang@
 # Implementation
 All the scripts were written in python 2.7.16. 
 
-# notes
+# Notes
 If you are using windows system, please make sure to include this line in front of all scripts using matplotlib:
 matplotlib.use('Agg')
 
