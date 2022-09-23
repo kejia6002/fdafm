@@ -187,15 +187,3 @@ pip install matplotlib pandas numpy scipy sys os math seaborn
 
    Run:
    python ../library/summary.py
-
-
-
- 
-
-
-
-
-
-
-
-![image](https://user-images.githubusercontent.com/23330368/189390906-ea945aac-e7eb-4e25-b63a-b180fe63b117.png)
